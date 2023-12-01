@@ -5,9 +5,9 @@ const Post = require("../mongo/model/PostModel");
 const Comment = require("../mongo/model/CommentModel");
 
 Router.get("/get-updated-details", async (req, res) => {
-  console.log("GETTING UPDATED DETAILS")
-  const userId = req.userId
-  console.log('update details',userId)
+  console.log("GETTING UPDATED DETAILS");
+  const userId = req.userId;
+  console.log("update details", userId);
   if (!userId) {
     return res.status(404).send({ success: false, error: "User not found" });
   } else {
@@ -17,11 +17,22 @@ Router.get("/get-updated-details", async (req, res) => {
       }).populate([
         {
           path: "posts",
-          populate: [{ path: "comments" }, { path: "user" }],
+          populate: [
+            { path: "comments", populate: [{ path: "user" }] },
+            { path: "user" },
+          ],
         },
         {
           path: "following",
-          populate: [{ path: "posts", populate: [{ path: "user" }] }],
+          populate: [
+            {
+              path: "posts",
+              populate: [
+                { path: "comments", populate: [{ path: "user" }] },
+                { path: "user" },
+              ],
+            },
+          ],
         },
         { path: "followers" },
         { path: "likedPosts" },
@@ -101,6 +112,15 @@ Router.post("/:email/edit-post/:postId", async (req, res) => {
   }
 });
 
+Router.get("/get-updated-post-details/:postId",async (req, res) => {
+  try {
+    const updatedPost = await Post.findById(req.params.postId);
+    res.status(200).send({ success: true, updatedPost });
+  } catch (error) {
+    res.status(500).send({ success: false, error: error.message });
+  }
+});
+
 Router.post("/:email/add-comment/:postId", async (req, res) => {
   if (req.body === null) {
     return res
@@ -119,7 +139,7 @@ Router.post("/:email/add-comment/:postId", async (req, res) => {
           .send({ success: false, error: "Post not found" });
       } else {
         const commentBody = {
-          ...req.body,
+          comment: req.body.comment,
           user: user._id,
           post: post._id,
         };

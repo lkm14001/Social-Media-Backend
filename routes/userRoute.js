@@ -31,11 +31,22 @@ Router.post("/login", async (req, res) => {
           ).populate([
             {
               path: "posts",
-              populate: [{ path: "comments" }, { path: "user" }],
+              populate: [
+                { path: "comments", populate: [{ path: "user" }] },
+                { path: "user" },
+              ],
             },
             {
               path: "following",
-              populate: [{ path: "posts", populate: [{ path: "user" }] }],
+              populate: [
+                {
+                  path: "posts",
+                  populate: [
+                    { path: "user" },
+                    { path: "comments", populate: [{ path: "user" }] },
+                  ],
+                },
+              ],
             },
             { path: "followers" },
             { path: "likedPosts" },
@@ -59,7 +70,7 @@ Router.post("/login", async (req, res) => {
           );
           res.cookie("idToken", idToken.toString(), {
             sameSite: "lax",
-            maxAge: 1000 * 60 * 15,
+            maxAge: 5 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === "DEV" ? false : true,
           });
@@ -83,7 +94,7 @@ Router.post("/login", async (req, res) => {
 });
 
 Router.post("/logout", async (req, res) => {
-  console.log('LOGOUT ENDPOINT ACCESSED')
+  console.log("LOGOUT ENDPOINT ACCESSED");
   try {
     res.clearCookie("idToken");
     res.clearCookie("refreshToken");
@@ -116,8 +127,8 @@ Router.get("/refresh-token", async (req, res) => {
     try {
       const decodedToken = jwt.decode(idToken, process.env.JWT_SECRET);
       let currentDate = new Date();
-
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
+        console.log(process.env.JWT_REFRESH_SECRET);
         jwt.verify(
           refreshToken,
           process.env.JWT_REFRESH_SECRET,
@@ -125,13 +136,17 @@ Router.get("/refresh-token", async (req, res) => {
             if (err) {
               res.status(401).send({ success: false, error: err.message });
             } else {
-              const newIdToken = jwt.sign(user.userId);
+              const newIdToken = jwt.sign(
+                { userId: user.userId },
+                process.env.JWT_SECRET,
+                { expiresIn: "10d" }
+              );
               return res
                 .cookie("idToken", newIdToken, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === "DEV" ? false : true,
                   sameSite: "none",
-                  maxAge: 1000 * 60 * 5,
+                  maxAge: 5 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
                 .send({ success: true });
@@ -142,9 +157,8 @@ Router.get("/refresh-token", async (req, res) => {
         return res.status(200).send({ success: true });
       }
     } catch (error) {
-      return res
-        .status(403)
-        .send({ error: "Invalid or expired token", success: false });
+      console.log(error);
+      return res.status(403).send({ error: "Invalid Token ", success: false });
     }
   }
 });
