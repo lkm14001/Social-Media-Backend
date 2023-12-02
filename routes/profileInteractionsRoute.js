@@ -39,6 +39,7 @@ Router.get("/get-updated-details", async (req, res) => {
         { path: "sentFriendRequests" },
         { path: "friendRequests" },
       ]);
+      // console.log(updatedDetails)
       return res.status(200).send({ success: true, user: updatedDetails });
     } catch (error) {
       return res.status(500).send({ success: false, error: error.message });
@@ -112,7 +113,34 @@ Router.post("/:email/edit-post/:postId", async (req, res) => {
   }
 });
 
-Router.get("/get-updated-post-details/:postId",async (req, res) => {
+Router.post("/:userId/delete-post/:postId", async (req, res) => {
+  if (!req.params.userId || !req.params.postId) {
+    return res.status(400).send({ success: false, error: "Bad Request" });
+  } else {
+    if (req.params.userId === req.user) {
+      try {
+        await User.findByIdAndUpdate(req.params.userId, {
+          $pull: { posts: req.params.postId },
+        });
+        await User.updateOne(
+          { likedPosts: { $in: [req.params.postId] } },
+          { $pull: { likedPosts: req.params.postId } }
+        );
+        await Post.findByIdAndDelete(req.params.postId);
+        return res.status(200).send({ success: true });
+      } catch (error) {
+        return res.status(500).send({ success: false, error: "Server Error" });
+      }
+    } else {
+      return res.status(500).send({
+        success: false,
+        error: "Error occured ! Please Try again later",
+      });
+    }
+  }
+});
+
+Router.get("/get-updated-post-details/:postId", async (req, res) => {
   try {
     const updatedPost = await Post.findById(req.params.postId);
     res.status(200).send({ success: true, updatedPost });

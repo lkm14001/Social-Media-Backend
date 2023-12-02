@@ -134,7 +134,7 @@ Router.get("/refresh-token", async (req, res) => {
           process.env.JWT_REFRESH_SECRET,
           (err, user) => {
             if (err) {
-              res.status(401).send({ success: false, error: err.message });
+              return res.status(401).send({ success: false, error: err.message });
             } else {
               const newIdToken = jwt.sign(
                 { userId: user.userId },
@@ -145,7 +145,7 @@ Router.get("/refresh-token", async (req, res) => {
                 .cookie("idToken", newIdToken, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === "DEV" ? false : true,
-                  sameSite: "none",
+                  sameSite: "lax",
                   maxAge: 5 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)

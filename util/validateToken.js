@@ -9,6 +9,7 @@ const validateToken = async (req, res, next) => {
           return res.status(401).send({ success: false, error: err.message });
         }
         console.log("TOKEN_VERIFICATION_SUCCESSFUL");
+        console.log('TOKEN VERIFIED USER',user)
         req.userId = user.userId;
       });
       next();
@@ -19,10 +20,10 @@ const validateToken = async (req, res, next) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === "DEV" ? false : true,
       });
-      res.status(401).send({ success: false, error: error.message });
+      return res.status(401).send({ success: false, error: error.message });
     }
   } else {
-    res.status(500).send({ success: false, error: "Token Not Found" });
+    return res.status(500).send({ success: false, error: "Token Not Found" });
   }
 };
 
