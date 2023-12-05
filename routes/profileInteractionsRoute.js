@@ -5,9 +5,7 @@ const Post = require("../mongo/model/PostModel");
 const Comment = require("../mongo/model/CommentModel");
 
 Router.get("/get-updated-details", async (req, res) => {
-  console.log("GETTING UPDATED DETAILS");
   const userId = req.userId;
-  console.log("update details", userId);
   if (!userId) {
     return res.status(404).send({ success: false, error: "User not found" });
   } else {
@@ -126,6 +124,7 @@ Router.post("/:userId/delete-post/:postId", async (req, res) => {
           { likedPosts: { $in: [req.params.postId] } },
           { $pull: { likedPosts: req.params.postId } }
         );
+        await Comment.deleteMany({ post: req.params.postId });
         await Post.findByIdAndDelete(req.params.postId);
         return res.status(200).send({ success: true });
       } catch (error) {
@@ -349,9 +348,29 @@ Router.get("/get-user/:userId", async (req, res) => {
       const userData = await User.findById(req.params.userId, {
         password: 0,
       }).populate([
-        { path: "posts", populate: { path: "comments" } },
-        { path: "following" },
+        {
+          path: "posts",
+          populate: [
+            { path: "comments", populate: [{ path: "user" }] },
+            { path: "user" },
+          ],
+        },
+        {
+          path: "following",
+          populate: [
+            {
+              path: "posts",
+              populate: [
+                { path: "comments", populate: [{ path: "user" }] },
+                { path: "user" },
+              ],
+            },
+          ],
+        },
         { path: "followers" },
+        { path: "likedPosts" },
+        { path: "sentFriendRequests" },
+        { path: "friendRequests" },
       ]);
       return res.status(200).send({ success: true, user: userData });
     }

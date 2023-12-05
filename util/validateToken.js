@@ -8,8 +8,6 @@ const validateToken = async (req, res, next) => {
         if (err) {
           return res.status(401).send({ success: false, error: err.message });
         }
-        console.log("TOKEN_VERIFICATION_SUCCESSFUL");
-        console.log('TOKEN VERIFIED USER',user)
         req.userId = user.userId;
       });
       next();
