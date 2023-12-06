@@ -69,13 +69,13 @@ Router.post("/login", async (req, res) => {
             }
           );
           res.cookie("idToken", idToken.toString(), {
-            sameSite: "none",
+            sameSite: process.env.NODE_ENV === "DEV" ? "lax" : "none",
             maxAge: 5 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === "DEV" ? false : true,
           });
           res.cookie("refreshToken", refreshToken.toString(), {
-            sameSite: "none",
+            sameSite: process.env.NODE_ENV === "DEV" ? "lax" : "none",
             maxAge: 10 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === "DEV" ? false : true,
@@ -96,8 +96,18 @@ Router.post("/login", async (req, res) => {
 Router.post("/logout", async (req, res) => {
   console.log("LOGOUT ENDPOINT ACCESSED");
   try {
-    res.clearCookie("idToken");
-    res.clearCookie("refreshToken");
+    res.clearCookie("idToken", {
+      sameSite: process.env.NODE_ENV === "DEV" ? "lax" : "none",
+      maxAge: 5 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "DEV" ? false : true,
+    });
+    res.clearCookie("refreshToken", {
+      sameSite: process.env.NODE_ENV === "DEV" ? "lax" : "none",
+      maxAge: 5 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "DEV" ? false : true,
+    });
     res.status(200).send({ success: true });
   } catch (error) {
     res.status(500).send({ success: false, error: error.message });
@@ -134,7 +144,9 @@ Router.get("/refresh-token", async (req, res) => {
           process.env.JWT_REFRESH_SECRET,
           (err, user) => {
             if (err) {
-              return res.status(401).send({ success: false, error: err.message });
+              return res
+                .status(401)
+                .send({ success: false, error: err.message });
             } else {
               const newIdToken = jwt.sign(
                 { userId: user.userId },
@@ -145,7 +157,7 @@ Router.get("/refresh-token", async (req, res) => {
                 .cookie("idToken", newIdToken, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === "DEV" ? false : true,
-                  sameSite: "none",
+                  sameSite: process.env.NODE_ENV === "DEV" ? "lax" : "none",
                   maxAge: 5 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
