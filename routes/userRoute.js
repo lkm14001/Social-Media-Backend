@@ -69,13 +69,13 @@ Router.post("/login", async (req, res) => {
             }
           );
           res.cookie("idToken", idToken.toString(), {
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 5 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === "DEV" ? false : true,
           });
           res.cookie("refreshToken", refreshToken.toString(), {
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 10 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             secure: process.env.NODE_ENV === "DEV" ? false : true,
@@ -145,7 +145,7 @@ Router.get("/refresh-token", async (req, res) => {
                 .cookie("idToken", newIdToken, {
                   httpOnly: true,
                   secure: process.env.NODE_ENV === "DEV" ? false : true,
-                  sameSite: "lax",
+                  sameSite: "none",
                   maxAge: 5 * 24 * 60 * 60 * 1000,
                 })
                 .status(200)
