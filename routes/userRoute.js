@@ -138,7 +138,6 @@ Router.get("/refresh-token", async (req, res) => {
       const decodedToken = jwt.decode(idToken, process.env.JWT_SECRET);
       let currentDate = new Date();
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
-        console.log(process.env.JWT_REFRESH_SECRET);
         jwt.verify(
           refreshToken,
           process.env.JWT_REFRESH_SECRET,

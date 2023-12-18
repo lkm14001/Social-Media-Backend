@@ -12,7 +12,6 @@ const validateToken = async (req, res, next) => {
       });
       next();
     } catch (error) {
-      console.log("TOKEN_VERIFICATION_FAILED");
       res.clearCookie("idToken", {
         sameSite: "lax",
         httpOnly: true,
