@@ -1,4 +1,4 @@
-require("../mongo/connection/connection");
+require("./mongo/connection/connection");
 
 const dotenv = require("dotenv");
 const path = require("path");
@@ -42,9 +42,9 @@ app.use(
 );
 app.use(express.json());
 
-const userRoute = require("../routes/userRoute");
-const profileInteractionRoute = require("../routes/profileInteractionsRoute");
-const validateToken = require("../util/validateToken");
+const userRoute = require("./routes/userRoute");
+const profileInteractionRoute = require("./routes/profileInteractionsRoute");
+const validateToken = require("./util/validateToken");
 
 //Routes
 app.use("/user", userRoute);
