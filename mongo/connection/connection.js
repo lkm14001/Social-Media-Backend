@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 
 const makeConnection = async () => {
-    const conn = await mongoose.connect(mongoURI);
+    const conn = await mongoose.connect(mongoURI.toString());
 }
 
 makeConnection()
