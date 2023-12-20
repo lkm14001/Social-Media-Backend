@@ -1,4 +1,4 @@
-const mongoConnection = require("./mongo/connection/connection");
+const mongoConnection = require("../mongo/connection/connection");
 mongoConnection ();
 
 const dotenv = require("dotenv");
@@ -43,9 +43,9 @@ app.use(
 );
 app.use(express.json());
 
-const userRoute = require("./routes/userRoute");
-const profileInteractionRoute = require("./routes/profileInteractionsRoute");
-const validateToken = require("./util/validateToken");
+const userRoute = require("../routes/userRoute");
+const profileInteractionRoute = require("../routes/profileInteractionsRoute");
+const validateToken = require("../util/validateToken");
 
 //Routes
 app.use("/user", userRoute);
@@ -56,3 +56,6 @@ const PORT = process.env.SERVER_PORT;
 app.listen(PORT, () => {
   console.log(`Server Running on ${PORT}`);
 });
+
+
+module.exports = app;
