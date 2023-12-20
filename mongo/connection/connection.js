@@ -10,8 +10,6 @@ const makeConnection = async () => {
     const conn = await mongoose.connect(mongoURI.toString());
 }
 
-makeConnection()
-
 mongoose.connection
     .once('open', () => {
         console.log('MongoDB Connection Successfull');
@@ -19,3 +17,5 @@ mongoose.connection
     .on('error', (err) => {
         console.log('Error Occured !!', err);
     })
+
+module.exports = makeConnection;
