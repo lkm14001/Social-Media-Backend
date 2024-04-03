@@ -2,6 +2,9 @@
 
 "SocializeMedia" is an e-commerce app to demonstrate how to put "full-stack" development together. It contains the basic CRUD for creating post, editing post, deleting and updating the posts. Follow and accept or ignore other 
 
+Access the website using the link below  
+[Socialize Media](https://socializemedia.web.app)
+
 ## Tech Stack
 
 **Backend:**
