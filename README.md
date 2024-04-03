@@ -122,5 +122,7 @@ Start the react app
 ```
 
 ## Screenshots
-![Home Page Where user can see posts of users they are following](https://github.com/lkm14001/Social-Media-Backend/blob/1b5052e4409804b227d9471f8d61330f6f4e21d7/SocializeMedia1.png)
-![Profile page](https://github.com/lkm14001/Social-Media-Backend/blob/1b5052e4409804b227d9471f8d61330f6f4e21d7/SocializeMedia2.png)
+Home Page Where user can see posts of users they are following  
+![Home Page Where user can see posts of users they are following](https://github.com/lkm14001/Social-Media-Backend/blob/1b5052e4409804b227d9471f8d61330f6f4e21d7/SocializeMedia1.png)  
+Profile Page  
+![Profile page](https://github.com/lkm14001/Social-Media-Backend/blob/1b5052e4409804b227d9471f8d61330f6f4e21d7/SocializeMedia2.png)  
